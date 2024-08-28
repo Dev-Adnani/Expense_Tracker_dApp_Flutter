@@ -1,8 +1,11 @@
+import 'package:exp_dapp/features/dashboard/bloc/dashboard_bloc.dart';
 import 'package:exp_dapp/utils/app_assets.dart';
 import 'package:flutter/material.dart';
 
 class DepositPage extends StatefulWidget {
-  const DepositPage({super.key});
+  final DashboardBloc dashboardBloc;
+
+  const DepositPage({super.key, required this.dashboardBloc});
 
   @override
   State<DepositPage> createState() => _DepositPageState();

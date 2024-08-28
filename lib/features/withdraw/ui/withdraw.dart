@@ -1,8 +1,11 @@
+import 'package:exp_dapp/features/dashboard/bloc/dashboard_bloc.dart';
 import 'package:exp_dapp/utils/app_assets.dart';
 import 'package:flutter/material.dart';
 
 class WithdrawPage extends StatefulWidget {
-  const WithdrawPage({super.key});
+  final DashboardBloc dashboardBloc;
+
+  const WithdrawPage({super.key, required this.dashboardBloc});
 
   @override
   State<WithdrawPage> createState() => _WithdrawPageState();

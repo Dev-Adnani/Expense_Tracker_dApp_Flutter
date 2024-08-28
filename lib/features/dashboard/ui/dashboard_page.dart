@@ -1,7 +1,9 @@
+import 'package:exp_dapp/features/dashboard/bloc/dashboard_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:exp_dapp/features/deposit/ui/deposit.dart';
 import 'package:exp_dapp/features/withdraw/ui/withdraw.dart';
 import 'package:exp_dapp/utils/app_assets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -11,93 +13,119 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
+  final DashboardBloc _dashboardBloc = DashboardBloc();
+  @override
+  void initState() {
+    _dashboardBloc.add(DashboardFetchInitialEvent());
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('DeFi Dashboard'),
       ),
-      body: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(16),
-            margin: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.5),
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.3),
-                  spreadRadius: 5,
-                  blurRadius: 7,
-                  offset: const Offset(0, 3),
-                ),
-              ],
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Hero(
-                    tag: 'ethLogo',
-                    child: Image.network(AppAssets.ethLogo,
-                        width: 50, height: 50)),
-                const SizedBox(width: 16),
-                const Text(
-                  '100 ETH',
-                  style: TextStyle(
-                    fontSize: 40,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+      body: BlocConsumer<DashboardBloc, DashboardState>(
+        bloc: _dashboardBloc,
+        listener: (context, state) {
+          // TODO: implement listener
+        },
+        builder: (context, state) {
+          switch (state.runtimeType) {
+            case const (DashboardLoading):
+              return const Center(child: CircularProgressIndicator());
+            case const (DashboardError):
+              return Center(child: Text((state as DashboardError).message));
+            case const (DashboardSuccess):
+              final dashboardState = (state as DashboardSuccess);
+              ;
+              return Column(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    margin: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Hero(
+                            tag: 'ethLogo',
+                            child: Image.network(AppAssets.ethLogo,
+                                width: 50, height: 50)),
+                        const SizedBox(width: 16),
+                        Text(
+                          '${dashboardState.balance} ETH',
+                          style: TextStyle(
+                            fontSize: 40,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _buildGradientButton(
-                  context,
-                  'Deposit',
-                  const DepositPage(),
-                  Colors.green..shade200,
-                ),
-                const SizedBox(width: 16),
-                _buildGradientButton(
-                  context,
-                  'Withdraw',
-                  const WithdrawPage(),
-                  Colors.redAccent..shade200,
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
-          const Text(
-            "Transactions",
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
-          ),
-          Expanded(
-            child: ListView(
-              children: [
-                _buildTransactionItem(
-                  '50 ETH',
-                  'NFT Purchase',
-                  '0x1234567890',
-                  'Withdraw',
-                  '25th August 12:00 PM',
-                ),
-                // Add more transactions here
-              ],
-            ),
-          ),
-        ],
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        _buildGradientButton(
+                          context,
+                          'Deposit',
+                          DepositPage(
+                            dashboardBloc: _dashboardBloc,
+                          ),
+                          Colors.green..shade200,
+                        ),
+                        const SizedBox(width: 16),
+                        _buildGradientButton(
+                          context,
+                          'Withdraw',
+                          WithdrawPage(
+                            dashboardBloc: _dashboardBloc,
+                          ),
+                          Colors.redAccent..shade200,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    "Transactions",
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                  if (dashboardState.transactions.isEmpty)
+                    const Center(
+                      child: Text('No transactions found'),
+                    ),
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: dashboardState.transactions.length,
+                      itemBuilder: (context, index) {
+                        final transaction = dashboardState.transactions[index];
+                        return _buildTransactionItem(
+                          '${transaction.amount} ETH',
+                          transaction.reason,
+                          transaction.address,
+                          transaction.amount > 0 ? 'Deposit' : 'Withdraw',
+                          transaction.date.toString(),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              );
+            default:
+              return const SizedBox();
+          }
+        },
       ),
     );
   }

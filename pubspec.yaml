@@ -1,6 +1,6 @@
 name: exp_dapp
 description: "A new Flutter project."
-publish_to: 'none' 
+publish_to: 'none'
 
 version: 1.0.0+1
 
@@ -12,6 +12,9 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_bloc: ^8.1.6
+  http: ^1.2.2
+  web3dart: ^2.7.3
+  web_socket_channel: ^3.0.1
 
 dev_dependencies:
   flutter_lints: ^4.0.0
@@ -20,10 +23,9 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-  # assets:
-  #   - images/a_dot_burr.jpeg
+  assets:
+    - build/contracts/
   #   - images/a_dot_ham.jpeg
- 
   # fonts:
   #   - family: Schyler
   #     fonts:
@@ -35,4 +37,3 @@ flutter:
   #       - asset: fonts/TrajanPro.ttf
   #       - asset: fonts/TrajanPro_Bold.ttf
   #         weight: 700
-
