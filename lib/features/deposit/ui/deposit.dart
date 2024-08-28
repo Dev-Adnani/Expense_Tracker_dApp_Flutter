@@ -1,4 +1,7 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:exp_dapp/features/dashboard/bloc/dashboard_bloc.dart';
+import 'package:exp_dapp/model/transaction_model.dart';
 import 'package:exp_dapp/utils/app_assets.dart';
 import 'package:flutter/material.dart';
 
@@ -13,7 +16,6 @@ class DepositPage extends StatefulWidget {
 
 class _DepositPageState extends State<DepositPage> {
   final _formKey = GlobalKey<FormState>();
-  final _addressController = TextEditingController();
   final _amountController = TextEditingController();
   final _reasonController = TextEditingController();
 
@@ -21,7 +23,6 @@ class _DepositPageState extends State<DepositPage> {
 
   @override
   void dispose() {
-    _addressController.dispose();
     _amountController.dispose();
     _reasonController.dispose();
     super.dispose();
@@ -38,11 +39,18 @@ class _DepositPageState extends State<DepositPage> {
           _isLoading = false;
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text(
-                  'Depositing ${_amountController.text} to ${_addressController.text}')),
+        widget.dashboardBloc.add(
+          DashboardDepositEvent(
+            model: TransactionModel(
+              address: "0x2f628E25eDF1b6cc88283A77A92C966f57862f2e",
+              reason: _reasonController.text,
+              amount: int.tryParse(_amountController.text) ?? 0,
+              date: DateTime.now(),
+            ),
+          ),
         );
+
+        Navigator.pop(context);
       });
     }
   }
@@ -77,27 +85,6 @@ class _DepositPageState extends State<DepositPage> {
                   ),
                 ),
                 const SizedBox(height: 24.0),
-                TextFormField(
-                  controller: _addressController,
-                  decoration: InputDecoration(
-                    labelText: 'Enter Address',
-                    hintText: 'Enter Address',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16.0),
-                    ),
-                    labelStyle: TextStyle(color: accentColor),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16.0),
-                      borderSide: BorderSide(color: accentColor),
-                    ),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter an address';
-                    }
-                    return null;
-                  },
-                ),
                 const SizedBox(height: 16.0),
                 TextFormField(
                   controller: _amountController,
@@ -148,7 +135,7 @@ class _DepositPageState extends State<DepositPage> {
                 ),
                 const SizedBox(height: 32.0),
                 Center(
-                  child: Container(
+                  child: SizedBox(
                     height: 60,
                     width: 200,
                     child: ElevatedButton(

@@ -28,9 +28,7 @@ class _DashboardPageState extends State<DashboardPage> {
       ),
       body: BlocConsumer<DashboardBloc, DashboardState>(
         bloc: _dashboardBloc,
-        listener: (context, state) {
-          // TODO: implement listener
-        },
+        listener: (context, state) {},
         builder: (context, state) {
           switch (state.runtimeType) {
             case const (DashboardLoading):
@@ -39,7 +37,7 @@ class _DashboardPageState extends State<DashboardPage> {
               return Center(child: Text((state as DashboardError).message));
             case const (DashboardSuccess):
               final dashboardState = (state as DashboardSuccess);
-              ;
+              {}
               return Column(
                 children: [
                   Container(
@@ -58,7 +56,7 @@ class _DashboardPageState extends State<DashboardPage> {
                         const SizedBox(width: 16),
                         Text(
                           '${dashboardState.balance} ETH',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 40,
                             fontWeight: FontWeight.bold,
                             color: Colors.black,
@@ -111,12 +109,10 @@ class _DashboardPageState extends State<DashboardPage> {
                       itemBuilder: (context, index) {
                         final transaction = dashboardState.transactions[index];
                         return _buildTransactionItem(
-                          '${transaction.amount} ETH',
-                          transaction.reason,
-                          transaction.address,
-                          transaction.amount > 0 ? 'Deposit' : 'Withdraw',
-                          transaction.date.toString(),
-                        );
+                            '${transaction.amount} ETH',
+                            transaction.reason,
+                            transaction.address,
+                            transaction.date);
                       },
                     ),
                   ),
@@ -172,8 +168,8 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  Widget _buildTransactionItem(String amount, String description,
-      String address, String type, String date) {
+  Widget _buildTransactionItem(
+      String amount, String description, String address, DateTime date) {
     return Container(
       padding: const EdgeInsets.all(16),
       margin: const EdgeInsets.all(8),
@@ -197,25 +193,29 @@ class _DashboardPageState extends State<DashboardPage> {
               children: [
                 Image.network(AppAssets.ethLogo, width: 30, height: 30),
                 const SizedBox(width: 16),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      amount,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        amount,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
                       ),
-                    ),
-                    Text(
-                      description,
-                      style: TextStyle(color: Colors.grey.shade300),
-                    ),
-                    Text(
-                      address,
-                      style: TextStyle(color: Colors.orange.shade500),
-                    ),
-                  ],
+                      Text(
+                        description,
+                        style: TextStyle(color: Colors.grey.shade300),
+                      ),
+                      Text(
+                        address,
+                        style: TextStyle(color: Colors.orange.shade500),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -225,14 +225,7 @@ class _DashboardPageState extends State<DashboardPage> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                type,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: type == 'Withdraw' ? Colors.red : Colors.green,
-                ),
-              ),
-              Text(
-                date,
+                date.toString(),
                 style: TextStyle(color: Colors.grey.shade300),
               ),
             ],
