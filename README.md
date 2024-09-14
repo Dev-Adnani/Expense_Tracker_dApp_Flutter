@@ -68,6 +68,9 @@ To get started with the app, follow these steps:
 - **Hero Animations:** For smooth transitions between screens.
 - **Custom Themes:** To maintain a consistent design across the app.
 
+## Feedback
+- If you have any feedback, please reach out to us at dev.adnani26@gmail.com
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
